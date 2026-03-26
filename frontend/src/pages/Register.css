@@ -17,24 +17,6 @@
   overflow: hidden;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
 }
-
-.status-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 210px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #111111;
-}
-
-.status-icons {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 15px;
-}
-
 .register-content {
   width: 100%;
 }

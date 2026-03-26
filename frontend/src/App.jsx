@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import AdminPanel from "./pages/AdminPanel";
 
 function App() {
   const token = localStorage.getItem("token");
@@ -22,6 +23,7 @@ function App() {
           path="/grocery"
           element={token ? <Dashboard /> : <Navigate to="/login" />}
         /> */}
+        <Route path="/admin" element={<AdminPanel />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,76 +1,51 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import API from "../api";
+import { Link } from "react-router-dom";
+import "./Register.css";
+import logo from "../assets/listify-logo.png";
 
 function Register() {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
-
-  const handleChange = e => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleRegister = async e => {
-    e.preventDefault();
-    setError("");
-
-    try {
-      const res = await API.post("/auth/register", form);
-      localStorage.setItem("token", res.data.token);
-      navigate("/grocery");
-    } catch (err) {
-      setError(err.response?.data?.message || "Register failed");
-    }
-  };
-
   return (
-    <div className="auth-container">
-      <h2>Register</h2>
+    <div className="register-page">
+      <div className="register-phone-frame">
+        <div className="status-bar"></div>
 
-      <form onSubmit={handleRegister} className="auth-form">
-        <input
-          type="text"
-          name="name"
-          placeholder="Name"
-          value={form.name}
-          onChange={handleChange}
-          required
-        />
+        <div className="register-content">
+          <div className="brand-wrap">
+            <img src={logo} alt="Listify logo" className="brand-logo" />
+          </div>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
+          <form className="register-form">
+            <div className="form-group">
+              <label htmlFor="username">username</label>
+              <input id="username" type="text" placeholder="username" />
+            </div>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <input id="password" type="password" placeholder="••••••••" />
+            </div>
 
-        <button type="submit">Register</button>
-      </form>
+            <div className="form-group">
+              <label htmlFor="confirmPassword">Confirm Password</label>
+              <input
+                id="confirmPassword"
+                type="password"
+                placeholder="••••••••"
+              />
+            </div>
 
-      {error && <p className="error-text">{error}</p>}
+            <button type="button" className="register-button">
+              Sign Up
+            </button>
+          </form>
 
-      <p>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
+          <p className="login-text">
+            Already have an account?{" "}
+            <Link to="/login" className="login-link">
+              Login
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

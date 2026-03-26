@@ -12,6 +12,8 @@ import "./Dashboard.css";
 import RenameListModal from "./RenameListModal";
 import AddItemModal from "./AddItemModal";
 import EditItemModal from "./EditItemModal";
+import ConfirmModal from "./ConfirmModal";
+
 function Dashboard() {
   const [listTitle, setListTitle] = useState("WEEKEND GROCERY");
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
@@ -19,6 +21,11 @@ function Dashboard() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null);
+  const [isClearModalOpen, setIsClearModalOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [deleteCategoryIndex, setDeleteCategoryIndex] = useState(null);
   const [groceryData, setGroceryData] = useState([
     {
       category: "Fruit",
@@ -69,7 +76,11 @@ function Dashboard() {
       })
     );
   };
-
+  const handleOpenDeleteModal = (categoryIndex, itemId) => {
+    setDeleteCategoryIndex(categoryIndex);
+    setItemToDelete(itemId);
+    setIsDeleteModalOpen(true);
+  };
   const handleDeleteItem = (categoryIndex, itemId) => {
     setGroceryData(prevData =>
       prevData.map((category, cIndex) => {
@@ -82,7 +93,16 @@ function Dashboard() {
       })
     );
   };
-
+  const handleConfirmDelete = () => {
+    handleDeleteItem(deleteCategoryIndex, itemToDelete);
+    setIsDeleteModalOpen(false);
+    setDeleteCategoryIndex(null);
+    setItemToDelete(null);
+  };
+  const handleConfirmClear = () => {
+    handleClearAll();
+    setIsClearModalOpen(false);
+  };
   const handleClearAll = () => {
     setGroceryData(prevData =>
       prevData.map(category => ({
@@ -97,9 +117,12 @@ function Dashboard() {
   };
 
   const handleLogout = () => {
-    alert("Logout button clicked");
+    setIsLogoutModalOpen(true);
   };
-
+  const handleConfirmLogout = () => {
+    alert("Logged out");
+    setIsLogoutModalOpen(false);
+  };
   const handleEditTitle = () => {
     setIsRenameModalOpen(true);
   };
@@ -184,7 +207,9 @@ function Dashboard() {
               <FiEdit2 />
             </button>
           </div>
-          <button className="clear-button" onClick={handleClearAll}>
+          <button
+            className="clear-button"
+            onClick={() => setIsClearModalOpen(true)}>
             Clear
           </button>
         </div>
@@ -224,7 +249,7 @@ function Dashboard() {
                         className="delete-button"
                         onClick={e => {
                           e.stopPropagation();
-                          handleDeleteItem(categoryIndex, item.id);
+                          handleOpenDeleteModal(categoryIndex, item.id);
                         }}>
                         <FiX />
                       </button>
@@ -267,6 +292,33 @@ function Dashboard() {
             console.log(newItem);
             setIsAddModalOpen(false);
           }}
+        />
+      )}
+      {isClearModalOpen && (
+        <ConfirmModal
+          title="CLEAR LIST"
+          message="Are you sure you want to clear the list? This action cannot be undone."
+          confirmText="Clear"
+          onClose={() => setIsClearModalOpen(false)}
+          onConfirm={handleConfirmClear}
+        />
+      )}
+      {isDeleteModalOpen && (
+        <ConfirmModal
+          title="DELETE ITEM"
+          message="Are you sure you want to delete this item?"
+          confirmText="Delete"
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
+      {isLogoutModalOpen && (
+        <ConfirmModal
+          title="LOGOUT"
+          message="Are you sure you want to logout?"
+          confirmText="Logout"
+          onClose={() => setIsLogoutModalOpen(false)}
+          onConfirm={handleConfirmLogout}
         />
       )}
     </div>

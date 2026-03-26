@@ -10,6 +10,10 @@ const generateToken = (id) => {
 const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
     try {
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: 'Name, email and password are required' });
+        }
+
         const userExists = await User.findOne({ email });
         if (userExists) return res.status(400).json({ message: 'User already exists' });
 
@@ -23,6 +27,10 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
     try {
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email and password are required' });
+        }
+
         const user = await User.findOne({ email });
         if (user && (await bcrypt.compare(password, user.password))) {
             res.json({ id: user.id, name: user.name, email: user.email, token: generateToken(user.id) });
@@ -32,6 +40,11 @@ const loginUser = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
+};
+
+const logoutUser = async (req, res) => {
+    // JWT logout is handled on the client by removing the token.
+    res.status(200).json({ message: 'Logged out successfully' });
 };
 
 const getProfile = async (req, res) => {
@@ -52,22 +65,4 @@ const getProfile = async (req, res) => {
     }
   };
 
-const updateUserProfile = async (req, res) => {
-    try {
-        const user = await User.findById(req.user.id);
-        if (!user) return res.status(404).json({ message: 'User not found' });
-
-        const { name, email, university, address } = req.body;
-        user.name = name || user.name;
-        user.email = email || user.email;
-        user.university = university || user.university;
-        user.address = address || user.address;
-
-        const updatedUser = await user.save();
-        res.json({ id: updatedUser.id, name: updatedUser.name, email: updatedUser.email, university: updatedUser.university, address: updatedUser.address, token: generateToken(updatedUser.id) });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-module.exports = { registerUser, loginUser, updateUserProfile, getProfile };
+module.exports = { registerUser, loginUser, logoutUser, getProfile };

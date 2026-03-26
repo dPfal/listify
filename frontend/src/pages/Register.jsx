@@ -6,8 +6,6 @@ function Register() {
   return (
     <div className="register-page">
       <div className="register-phone-frame">
-        <div className="status-bar"></div>
-
         <div className="register-content">
           <div className="brand-wrap">
             <img src={logo} alt="Listify logo" className="brand-logo" />

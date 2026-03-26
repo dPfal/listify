@@ -6,8 +6,6 @@ function Login() {
   return (
     <div className="login-page">
       <div className="login-phone-frame">
-        <div className="status-bar"></div>
-
         <div className="login-content">
           <div className="brand-wrap">
             <img src={logo} alt="Listify logo" className="brand-logo" />

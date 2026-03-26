@@ -1,6 +1,7 @@
 import { useState } from "react";
-import "./AddItemModal.css";
 import { IoIosArrowDown } from "react-icons/io";
+
+import "./AddItemModal.css";
 
 function AddItemModal({ onClose, onAdd }) {
   const [itemName, setItemName] = useState("");

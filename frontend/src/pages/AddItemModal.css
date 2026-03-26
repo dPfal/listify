@@ -1,0 +1,151 @@
+.bottom-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 1000;
+}
+
+.add-item-sheet {
+  width: 100%;
+  max-width: 390px;
+  background: #f3f3f3;
+  border-radius: 28px 28px 0 0;
+  padding: 28px 20px 34px;
+  box-sizing: border-box;
+  min-height: 360px;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.12);
+  animation: slideUp 0.22s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.add-item-title {
+  margin: 0 0 22px;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #000;
+  text-align: left;
+}
+
+.add-item-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.add-item-input,
+.add-item-select {
+  width: 100%;
+  height: 46px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f8f8f8;
+  padding: 0 14px;
+  font-size: 15px;
+  color: #374151;
+  box-sizing: border-box;
+}
+
+.quantity-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.quantity-label {
+  font-size: 15px;
+  color: #111827;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qty-button {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #d1d5db;
+  background: #f3f3f3;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  color: black;
+}
+
+.qty-value {
+  width: 36px;
+  height: 30px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: #4b5563;
+  background: #f8f8f8;
+}
+
+.add-submit-button {
+  margin-top: 8px;
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 14px;
+  background: #000;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+.custom-select {
+  position: relative;
+}
+
+.select-box {
+  height: 46px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f8f8f8;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 138px;
+  overflow-y: auto;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  z-index: 1000;
+}
+
+.dropdown-item {
+  height: 46px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #eee;
+}

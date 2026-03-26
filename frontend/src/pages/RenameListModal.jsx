@@ -17,7 +17,7 @@ function RenameListModal({ currentTitle, onSave, onClose }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="center-modal-overlay" onClick={onClose}>
       <div className="rename-modal" onClick={e => e.stopPropagation()}>
         <h2 className="rename-modal-title">RENAME LIST</h2>
 

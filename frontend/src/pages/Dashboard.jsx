@@ -10,10 +10,12 @@ import {
 
 import "./Dashboard.css";
 import RenameListModal from "./RenameListModal";
+import AddItemModal from "./AddItemModal";
 
 function Dashboard() {
   const [listTitle, setListTitle] = useState("WEEKEND GROCERY");
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [groceryData, setGroceryData] = useState([
     {
       category: "Fruit",
@@ -88,7 +90,7 @@ function Dashboard() {
   };
 
   const handleAddItem = () => {
-    alert("Add item button clicked");
+    setIsAddModalOpen(true);
   };
 
   const handleLogout = () => {
@@ -170,6 +172,10 @@ function Dashboard() {
             </div>
           ))}
         </div>
+
+        <button className="floating-add-button" onClick={handleAddItem}>
+          <FiPlus />
+        </button>
         {isRenameModalOpen && (
           <RenameListModal
             currentTitle={listTitle}
@@ -177,10 +183,17 @@ function Dashboard() {
             onClose={() => setIsRenameModalOpen(false)}
           />
         )}
-        <button className="floating-add-button" onClick={handleAddItem}>
-          <FiPlus />
-        </button>
       </div>
+
+      {isAddModalOpen && (
+        <AddItemModal
+          onClose={() => setIsAddModalOpen(false)}
+          onAdd={newItem => {
+            console.log(newItem);
+            setIsAddModalOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }

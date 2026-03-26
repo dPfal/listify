@@ -56,8 +56,10 @@
 
 .title-left {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 8px;
+  width: 170px;
+  align-items: flex-end;
 }
 
 .dashboard-title {
@@ -67,12 +69,14 @@
   letter-spacing: 1px;
   color: #000;
   margin: 0;
+  white-space: pre-line;
 }
 
 .edit-button {
-  font-size: 26px;
+  font-size: 22px;
   color: #000;
-  margin-bottom: 4px;
+  margin-bottom: 0px;
+  margin: 5px;
 }
 
 .clear-button {

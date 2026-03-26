@@ -2,11 +2,13 @@ import { useState } from "react";
 import "./AddItemModal.css";
 import { IoIosArrowDown } from "react-icons/io";
 
-function AddItemModal({ onClose, onAdd }) {
-  const [itemName, setItemName] = useState("");
-  const [category, setCategory] = useState("");
-  const [quantity, setQuantity] = useState(1);
+function EditItemModal({ onClose, onSave, currentItem }) {
+  const [itemName, setItemName] = useState(currentItem.name);
+  const [category, setCategory] = useState(currentItem.category);
+  const [quantity, setQuantity] = useState(currentItem.quantity);
   const [isOpen, setIsOpen] = useState(false);
+
+  const categories = ["Fruit", "Veggies", "Bread", "Dairy", "Meat", "Seafood"];
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -17,11 +19,11 @@ function AddItemModal({ onClose, onAdd }) {
       return;
     }
 
-    onAdd({
+    onSave({
+      ...currentItem,
       name: trimmedName,
       category,
       quantity,
-      checked: false,
     });
   };
 
@@ -38,7 +40,7 @@ function AddItemModal({ onClose, onAdd }) {
   return (
     <div className="bottom-modal-overlay" onClick={onClose}>
       <div className="add-item-sheet" onClick={e => e.stopPropagation()}>
-        <h2 className="add-item-title">ADD ITEM</h2>
+        <h2 className="add-item-title">EDIT ITEM</h2>
 
         <form className="add-item-form" onSubmit={handleSubmit}>
           <input
@@ -57,22 +59,21 @@ function AddItemModal({ onClose, onAdd }) {
 
             {isOpen && (
               <div className="dropdown">
-                {["Fruit", "Veggies", "Bread", "Dairy", "Meat", "Seafood"].map(
-                  item => (
-                    <div
-                      key={item}
-                      className="dropdown-item"
-                      onClick={() => {
-                        setCategory(item);
-                        setIsOpen(false);
-                      }}>
-                      {item}
-                    </div>
-                  )
-                )}
+                {categories.map(item => (
+                  <div
+                    key={item}
+                    className="dropdown-item"
+                    onClick={() => {
+                      setCategory(item);
+                      setIsOpen(false);
+                    }}>
+                    {item}
+                  </div>
+                ))}
               </div>
             )}
           </div>
+
           <div className="quantity-row">
             <span className="quantity-label">Quantity</span>
 
@@ -94,8 +95,9 @@ function AddItemModal({ onClose, onAdd }) {
               </button>
             </div>
           </div>
+
           <button type="submit" className="add-submit-button">
-            Add
+            Save
           </button>
         </form>
       </div>
@@ -103,4 +105,4 @@ function AddItemModal({ onClose, onAdd }) {
   );
 }
 
-export default AddItemModal;
+export default EditItemModal;

@@ -11,11 +11,14 @@ import {
 import "./Dashboard.css";
 import RenameListModal from "./RenameListModal";
 import AddItemModal from "./AddItemModal";
-
+import EditItemModal from "./EditItemModal";
 function Dashboard() {
   const [listTitle, setListTitle] = useState("WEEKEND GROCERY");
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null);
   const [groceryData, setGroceryData] = useState([
     {
       category: "Fruit",
@@ -100,6 +103,63 @@ function Dashboard() {
   const handleEditTitle = () => {
     setIsRenameModalOpen(true);
   };
+
+  const handleOpenEditModal = (categoryIndex, item) => {
+    setSelectedCategoryIndex(categoryIndex);
+    setSelectedItem({
+      ...item,
+      category: groceryData[categoryIndex].category,
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveEditedItem = updatedItem => {
+    setGroceryData(prevData => {
+      const originalCategory = prevData[selectedCategoryIndex].category;
+
+      return prevData.map(category => {
+        if (category.category === originalCategory) {
+          return {
+            ...category,
+            items:
+              originalCategory === updatedItem.category
+                ? category.items.map(item =>
+                    item.id === updatedItem.id
+                      ? {
+                          ...item,
+                          name: updatedItem.name,
+                          quantity: updatedItem.quantity,
+                          checked: updatedItem.checked,
+                        }
+                      : item
+                  )
+                : category.items.filter(item => item.id !== updatedItem.id),
+          };
+        }
+
+        if (category.category === updatedItem.category) {
+          return {
+            ...category,
+            items: [
+              ...category.items,
+              {
+                id: updatedItem.id,
+                name: updatedItem.name,
+                quantity: updatedItem.quantity,
+                checked: updatedItem.checked,
+              },
+            ],
+          };
+        }
+
+        return category;
+      });
+    });
+
+    setIsEditModalOpen(false);
+    setSelectedItem(null);
+    setSelectedCategoryIndex(null);
+  };
   const handleSaveTitle = updatedTitle => {
     setListTitle(updatedTitle.toUpperCase());
     setIsRenameModalOpen(false);
@@ -140,12 +200,16 @@ function Dashboard() {
               <div className="category-card">
                 {category.items.length > 0 ? (
                   category.items.map(item => (
-                    <div className="item-row" key={item.id}>
+                    <div
+                      className="item-row"
+                      key={item.id}
+                      onClick={() => handleOpenEditModal(categoryIndex, item)}>
                       <button
                         className="check-button"
-                        onClick={() =>
-                          handleToggleCheck(categoryIndex, item.id)
-                        }>
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleToggleCheck(categoryIndex, item.id);
+                        }}>
                         {item.checked ? <FiCheckSquare /> : <FiSquare />}
                       </button>
 
@@ -158,9 +222,10 @@ function Dashboard() {
 
                       <button
                         className="delete-button"
-                        onClick={() =>
-                          handleDeleteItem(categoryIndex, item.id)
-                        }>
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleDeleteItem(categoryIndex, item.id);
+                        }}>
                         <FiX />
                       </button>
                     </div>
@@ -184,7 +249,17 @@ function Dashboard() {
           />
         )}
       </div>
-
+      {isEditModalOpen && selectedItem && (
+        <EditItemModal
+          currentItem={selectedItem}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setSelectedItem(null);
+            setSelectedCategoryIndex(null);
+          }}
+          onSave={handleSaveEditedItem}
+        />
+      )}
       {isAddModalOpen && (
         <AddItemModal
           onClose={() => setIsAddModalOpen(false)}

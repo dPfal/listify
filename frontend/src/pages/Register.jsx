@@ -1,53 +1,78 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../axiosConfig';
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import API from "../api";
 
-const Register = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+function Register() {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleChange = e => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleRegister = async e => {
     e.preventDefault();
+    setError("");
+
     try {
-      await axiosInstance.post('/api/auth/register', formData);
-      alert('Registration successful. Please log in.');
-      navigate('/login');
-    } catch (error) {
-      alert('Registration failed. Please try again.');
+      const res = await API.post("/auth/register", form);
+      localStorage.setItem("token", res.data.token);
+      navigate("/grocery");
+    } catch (err) {
+      setError(err.response?.data?.message || "Register failed");
     }
   };
 
   return (
-    <div className="max-w-md mx-auto mt-20">
-      <form onSubmit={handleSubmit} className="bg-white p-6 shadow-md rounded">
-        <h1 className="text-2xl font-bold mb-4 text-center">Register</h1>
+    <div className="auth-container">
+      <h2>Register</h2>
+
+      <form onSubmit={handleRegister} className="auth-form">
         <input
           type="text"
+          name="name"
           placeholder="Name"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="w-full mb-4 p-2 border rounded"
+          value={form.name}
+          onChange={handleChange}
+          required
         />
+
         <input
           type="email"
+          name="email"
           placeholder="Email"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          className="w-full mb-4 p-2 border rounded"
+          value={form.email}
+          onChange={handleChange}
+          required
         />
+
         <input
           type="password"
+          name="password"
           placeholder="Password"
-          value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          className="w-full mb-4 p-2 border rounded"
+          value={form.password}
+          onChange={handleChange}
+          required
         />
-        <button type="submit" className="w-full bg-green-600 text-white p-2 rounded">
-          Register
-        </button>
+
+        <button type="submit">Register</button>
       </form>
+
+      {error && <p className="error-text">{error}</p>}
+
+      <p>
+        Already have an account? <Link to="/login">Login</Link>
+      </p>
     </div>
   );
-};
+}
 
 export default Register;

@@ -9,8 +9,11 @@ import {
 } from "react-icons/fi";
 
 import "./Dashboard.css";
+import RenameListModal from "./RenameListModal";
 
 function Dashboard() {
+  const [listTitle, setListTitle] = useState("WEEKEND GROCERY");
+  const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [groceryData, setGroceryData] = useState([
     {
       category: "Fruit",
@@ -93,7 +96,11 @@ function Dashboard() {
   };
 
   const handleEditTitle = () => {
-    alert("Edit title button clicked");
+    setIsRenameModalOpen(true);
+  };
+  const handleSaveTitle = updatedTitle => {
+    setListTitle(updatedTitle.toUpperCase());
+    setIsRenameModalOpen(false);
   };
 
   return (
@@ -108,18 +115,13 @@ function Dashboard() {
 
         <div className="title-row">
           <div className="title-left">
-            <h1 className="dashboard-title">
-              WEEKEND
-              <br />
-              GROCERY
-            </h1>
+            <div className="dashboard-title">{listTitle}</div>
             <button
               className="icon-button edit-button"
               onClick={handleEditTitle}>
               <FiEdit2 />
             </button>
           </div>
-
           <button className="clear-button" onClick={handleClearAll}>
             Clear
           </button>
@@ -168,7 +170,13 @@ function Dashboard() {
             </div>
           ))}
         </div>
-
+        {isRenameModalOpen && (
+          <RenameListModal
+            currentTitle={listTitle}
+            onSave={handleSaveTitle}
+            onClose={() => setIsRenameModalOpen(false)}
+          />
+        )}
         <button className="floating-add-button" onClick={handleAddItem}>
           <FiPlus />
         </button>

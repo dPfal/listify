@@ -1,7 +1,7 @@
 const assert = require("assert");
 
 describe("Test", () => {
-  it("return true", () => {
+  it("test passed", () => {
     assert.strictEqual(true, true);
   });
 });

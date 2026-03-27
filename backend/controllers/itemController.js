@@ -69,7 +69,6 @@ const deleteItem = async (req, res) => {
       });
     }
 
-    // 🔥 본인 아이템만 삭제 가능
     if (item.user.toString() !== req.user.id) {
       return res.status(401).json({
         message: "Not authorized",
@@ -88,8 +87,23 @@ const deleteItem = async (req, res) => {
     });
   }
 };
+const getItems = async (req, res) => {
+  try {
+    const items = await Item.find({ user: req.user.id }).sort({
+      createdAt: -1,
+    });
+
+    return res.status(200).json(items);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to fetch items",
+      error: error.message,
+    });
+  }
+};
 module.exports = {
   createItem,
   updateItem,
   deleteItem,
+  getItems,
 };

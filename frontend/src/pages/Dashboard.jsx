@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   FiLogOut,
   FiEdit2,
@@ -42,6 +42,63 @@ function Dashboard() {
       }),
     );
   };
+  const groupItemsByCategory = items => {
+    const grouped = items.reduce((acc, item) => {
+      const categoryName = item.category || "Uncategorized";
+
+      const existingCategory = acc.find(
+        category => category.category === categoryName,
+      );
+
+      const formattedItem = {
+        id: item._id,
+        name: item.name,
+        quantity: item.quantity,
+        checked: item.purchased,
+      };
+
+      if (existingCategory) {
+        existingCategory.items.push(formattedItem);
+      } else {
+        acc.push({
+          category: categoryName,
+          items: [formattedItem],
+        });
+      }
+
+      return acc;
+    }, []);
+
+    return grouped;
+  };
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const response = await fetch("http://localhost:5001/api/items", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          console.error(data.message || "Failed to fetch items");
+          return;
+        }
+
+        const groupedData = groupItemsByCategory(data);
+        setGroceryData(groupedData);
+      } catch (error) {
+        console.error("Fetch items error:", error);
+      }
+    };
+
+    fetchItems();
+  }, []);
   const handleOpenDeleteModal = (categoryIndex, itemId) => {
     setDeleteCategoryIndex(categoryIndex);
     setItemToDelete(itemId);

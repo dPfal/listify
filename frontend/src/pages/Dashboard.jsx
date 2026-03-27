@@ -15,78 +15,23 @@ import EditItemModal from "./EditItemModal";
 import ConfirmModal from "./ConfirmModal";
 
 function Dashboard() {
-  const [listTitle, setListTitle] = useState("WEEKEND GROCERY");
+  const [listName, setListName] = useState("My Grocery List");
+  const [groceryData, setGroceryData] = useState([]);
+
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null);
   const [isClearModalOpen, setIsClearModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [deleteCategoryIndex, setDeleteCategoryIndex] = useState(null);
-  const [groceryData, setGroceryData] = useState([]);
 
-  const handleToggleCheck = async (categoryIndex, itemId) => {
-    try {
-      const token = localStorage.getItem("token");
-
-      const category = groceryData[categoryIndex];
-      const currentItem = category.items.find(item => item.id === itemId);
-
-      if (!currentItem) {
-        return;
-      }
-
-      const response = await fetch(
-        `http://localhost:5001/api/items/${itemId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            name: currentItem.name,
-            quantity: currentItem.quantity,
-            category: category.category,
-            checked: !currentItem.checked,
-          }),
-        },
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(data.message || "Failed to update item");
-        return;
-      }
-
-      setGroceryData(prevData =>
-        prevData.map((category, cIndex) => {
-          if (cIndex !== categoryIndex) return category;
-
-          return {
-            ...category,
-            items: category.items.map(item =>
-              item.id === itemId
-                ? {
-                    ...item,
-                    checked: data.purchased,
-                  }
-                : item,
-            ),
-          };
-        }),
-      );
-    } catch (error) {
-      console.error("Toggle check error:", error);
-      alert("Server error");
-    }
-  };
   const groupItemsByCategory = items => {
-    const grouped = items.reduce((acc, item) => {
+    return items.reduce((acc, item) => {
       const categoryName = item.category || "Uncategorized";
 
       const existingCategory = acc.find(
@@ -111,9 +56,38 @@ function Dashboard() {
 
       return acc;
     }, []);
-
-    return grouped;
   };
+
+  useEffect(() => {
+    const fetchListName = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const response = await fetch(
+          "http://localhost:5001/api/users/list-name",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          console.error(data.message || "Failed to fetch list name");
+          return;
+        }
+
+        setListName(data.listName);
+      } catch (error) {
+        console.error("Error fetching list name:", error);
+      }
+    };
+
+    fetchListName();
+  }, []);
+
   useEffect(() => {
     const fetchItems = async () => {
       try {
@@ -142,94 +116,64 @@ function Dashboard() {
 
     fetchItems();
   }, []);
-  const handleOpenDeleteModal = (categoryIndex, itemId) => {
-    setDeleteCategoryIndex(categoryIndex);
-    setItemToDelete(itemId);
-    setIsDeleteModalOpen(true);
-  };
-  const handleDeleteItem = (categoryIndex, itemId) => {
-    setGroceryData(prevData =>
-      prevData.map((category, cIndex) => {
-        if (cIndex !== categoryIndex) return category;
-
-        return {
-          ...category,
-          items: category.items.filter(item => item.id !== itemId),
-        };
-      }),
-    );
-  };
-  const handleConfirmDelete = async () => {
-    try {
-      const token = localStorage.getItem("token");
-
-      const response = await fetch(
-        `http://localhost:5001/api/items/${itemToDelete}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(data.message || "Failed to delete item");
-        return;
-      }
-
-      setGroceryData(prevData =>
-        prevData
-          .map((category, cIndex) => {
-            if (cIndex !== deleteCategoryIndex) return category;
-
-            return {
-              ...category,
-              items: category.items.filter(item => item.id !== itemToDelete),
-            };
-          })
-          .filter(category => category.items.length > 0),
-      );
-
-      setIsDeleteModalOpen(false);
-      setItemToDelete(null);
-      setDeleteCategoryIndex(null);
-    } catch (error) {
-      console.error(error);
-      alert("Server error");
-    }
-  };
-  const handleConfirmClear = async () => {
-    try {
-      const token = localStorage.getItem("token");
-
-      const response = await fetch("http://localhost:5001/api/items", {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(data.message || "Failed to clear items");
-        return;
-      }
-
-      setGroceryData([]);
-      setIsClearModalOpen(false);
-    } catch (error) {
-      console.error("Clear items error:", error);
-      alert("Server error");
-    }
-  };
 
   const handleAddItem = () => {
     setIsAddModalOpen(true);
   };
+
+  const handleLogout = () => {
+    setIsLogoutModalOpen(true);
+  };
+
+  const handleConfirmLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    setIsLogoutModalOpen(false);
+    window.location.href = "/login";
+  };
+
+  const handleEditTitle = () => {
+    setIsRenameModalOpen(true);
+  };
+
+  const handleSaveTitle = async updatedTitle => {
+    try {
+      const trimmedTitle = updatedTitle.trim();
+
+      if (!trimmedTitle) {
+        alert("List name cannot be empty");
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        "http://localhost:5001/api/users/list-name",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ listName: trimmedTitle }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Failed to update list name");
+        return;
+      }
+
+      setListName(data.listName);
+      setIsRenameModalOpen(false);
+    } catch (error) {
+      console.error("Update list name error:", error);
+      alert("Server error");
+    }
+  };
+
   const handleCreateItem = async newItem => {
     try {
       const token = localStorage.getItem("token");
@@ -294,19 +238,65 @@ function Dashboard() {
         ];
       });
     } catch (error) {
-      console.error(error);
+      console.error("Create item error:", error);
       alert("Server error");
     }
   };
-  const handleLogout = () => {
-    setIsLogoutModalOpen(true);
-  };
-  const handleConfirmLogout = () => {
-    alert("Logged out");
-    setIsLogoutModalOpen(false);
-  };
-  const handleEditTitle = () => {
-    setIsRenameModalOpen(true);
+
+  const handleToggleCheck = async (categoryIndex, itemId) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const category = groceryData[categoryIndex];
+      const currentItem = category.items.find(item => item.id === itemId);
+
+      if (!currentItem) return;
+
+      const response = await fetch(
+        `http://localhost:5001/api/items/${itemId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: currentItem.name,
+            quantity: currentItem.quantity,
+            category: category.category,
+            purchased: !currentItem.checked,
+          }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Failed to update item");
+        return;
+      }
+
+      setGroceryData(prevData =>
+        prevData.map((categoryItem, cIndex) => {
+          if (cIndex !== categoryIndex) return categoryItem;
+
+          return {
+            ...categoryItem,
+            items: categoryItem.items.map(item =>
+              item.id === itemId
+                ? {
+                    ...item,
+                    checked: data.purchased,
+                  }
+                : item,
+            ),
+          };
+        }),
+      );
+    } catch (error) {
+      console.error("Toggle check error:", error);
+      alert("Server error");
+    }
   };
 
   const handleOpenEditModal = (categoryIndex, item) => {
@@ -334,7 +324,7 @@ function Dashboard() {
             name: updatedItem.name,
             quantity: updatedItem.quantity,
             category: updatedItem.category,
-            checked: updatedItem.checked,
+            purchased: updatedItem.checked,
           }),
         },
       );
@@ -347,29 +337,34 @@ function Dashboard() {
       }
 
       setGroceryData(prevData => {
-        const originalCategory = prevData[selectedCategoryIndex].category;
+        const originalCategory = prevData[selectedCategoryIndex]?.category;
+        const newCategory = data.category;
 
-        return prevData.map(category => {
+        let updatedData = prevData.map(category => {
           if (category.category === originalCategory) {
+            if (originalCategory === newCategory) {
+              return {
+                ...category,
+                items: category.items.map(item =>
+                  item.id === updatedItem.id
+                    ? {
+                        ...item,
+                        name: data.name,
+                        quantity: data.quantity,
+                        checked: data.purchased,
+                      }
+                    : item,
+                ),
+              };
+            }
+
             return {
               ...category,
-              items:
-                originalCategory === data.category
-                  ? category.items.map(item =>
-                      item.id === updatedItem.id
-                        ? {
-                            ...item,
-                            name: data.name,
-                            quantity: data.quantity,
-                            checked: data.purchased,
-                          }
-                        : item,
-                    )
-                  : category.items.filter(item => item.id !== updatedItem.id),
+              items: category.items.filter(item => item.id !== updatedItem.id),
             };
           }
 
-          if (category.category === data.category) {
+          if (category.category === newCategory) {
             return {
               ...category,
               items: [
@@ -386,6 +381,26 @@ function Dashboard() {
 
           return category;
         });
+
+        const categoryExists = updatedData.some(
+          category => category.category === newCategory,
+        );
+
+        if (!categoryExists) {
+          updatedData.push({
+            category: newCategory,
+            items: [
+              {
+                id: updatedItem.id,
+                name: data.name,
+                quantity: data.quantity,
+                checked: data.purchased,
+              },
+            ],
+          });
+        }
+
+        return updatedData.filter(category => category.items.length > 0);
       });
 
       setIsEditModalOpen(false);
@@ -397,9 +412,79 @@ function Dashboard() {
     }
   };
 
-  const handleSaveTitle = updatedTitle => {
-    setListTitle(updatedTitle.toUpperCase());
-    setIsRenameModalOpen(false);
+  const handleOpenDeleteModal = (categoryIndex, itemId) => {
+    setDeleteCategoryIndex(categoryIndex);
+    setItemToDelete(itemId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        `http://localhost:5001/api/items/${itemToDelete}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Failed to delete item");
+        return;
+      }
+
+      setGroceryData(prevData =>
+        prevData
+          .map((category, cIndex) => {
+            if (cIndex !== deleteCategoryIndex) return category;
+
+            return {
+              ...category,
+              items: category.items.filter(item => item.id !== itemToDelete),
+            };
+          })
+          .filter(category => category.items.length > 0),
+      );
+
+      setIsDeleteModalOpen(false);
+      setItemToDelete(null);
+      setDeleteCategoryIndex(null);
+    } catch (error) {
+      console.error("Delete item error:", error);
+      alert("Server error");
+    }
+  };
+
+  const handleConfirmClear = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch("http://localhost:5001/api/items", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Failed to clear items");
+        return;
+      }
+
+      setGroceryData([]);
+      setIsClearModalOpen(false);
+    } catch (error) {
+      console.error("Clear items error:", error);
+      alert("Server error");
+    }
   };
 
   return (
@@ -414,13 +499,14 @@ function Dashboard() {
 
         <div className="title-row">
           <div className="title-left">
-            <div className="dashboard-title">{listTitle}</div>
+            <div className="dashboard-title">{listName}</div>
             <button
               className="icon-button edit-button"
               onClick={handleEditTitle}>
               <FiEdit2 />
             </button>
           </div>
+
           <button
             className="clear-button"
             onClick={() => setIsClearModalOpen(true)}>
@@ -476,17 +562,20 @@ function Dashboard() {
             ))
           )}
         </div>
+
         <button className="floating-add-button" onClick={handleAddItem}>
           <FiPlus />
         </button>
+
         {isRenameModalOpen && (
           <RenameListModal
-            currentTitle={listTitle}
+            currentTitle={listName}
             onSave={handleSaveTitle}
             onClose={() => setIsRenameModalOpen(false)}
           />
         )}
       </div>
+
       {isEditModalOpen && selectedItem && (
         <EditItemModal
           currentItem={selectedItem}
@@ -498,6 +587,7 @@ function Dashboard() {
           onSave={handleSaveEditedItem}
         />
       )}
+
       {isAddModalOpen && (
         <AddItemModal
           onClose={() => setIsAddModalOpen(false)}
@@ -507,6 +597,7 @@ function Dashboard() {
           }}
         />
       )}
+
       {isClearModalOpen && (
         <ConfirmModal
           title="CLEAR LIST"
@@ -516,6 +607,7 @@ function Dashboard() {
           onConfirm={handleConfirmClear}
         />
       )}
+
       {isDeleteModalOpen && (
         <ConfirmModal
           title="DELETE ITEM"
@@ -525,6 +617,7 @@ function Dashboard() {
           onConfirm={handleConfirmDelete}
         />
       )}
+
       {isLogoutModalOpen && (
         <ConfirmModal
           title="LOGOUT"

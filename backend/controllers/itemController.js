@@ -26,6 +26,41 @@ const createItem = async (req, res) => {
   }
 };
 
+const updateItem = async (req, res) => {
+  const { name, quantity, category, checked } = req.body;
+
+  try {
+    const item = await Item.findById(req.params.id);
+
+    if (!item) {
+      return res.status(404).json({
+        message: "Item not found",
+      });
+    }
+
+    if (item.user.toString() !== req.user.id) {
+      return res.status(401).json({
+        message: "Not authorized",
+      });
+    }
+
+    item.name = name ?? item.name;
+    item.quantity = quantity ?? item.quantity;
+    item.category = category ?? item.category;
+    item.purchased = checked ?? item.purchased;
+
+    const updatedItem = await item.save();
+
+    return res.status(200).json(updatedItem);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to update item",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createItem,
+  updateItem,
 };

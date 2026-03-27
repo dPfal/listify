@@ -193,3 +193,14 @@
     right: calc(50% - 195px + 18px);
   }
 }
+.empty-state {
+  text-align: center;
+  margin-top: 80px;
+  color: #888;
+}
+
+.empty-sub {
+  font-size: 14px;
+  margin-top: 8px;
+  color: #aaa;
+}

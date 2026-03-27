@@ -11,30 +11,86 @@ function Login() {
     password: "",
   });
 
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({
+    username: "",
+    password: "",
+    server: "",
+  });
 
   const handleChange = e => {
     const { id, value } = e.target;
+
     setFormData(prev => ({
       ...prev,
       [id]: value,
     }));
+
+    setErrors(prev => ({
+      ...prev,
+      [id]: "",
+      server: "",
+    }));
   };
 
-  const handleLogin = e => {
+  const handleLogin = async e => {
     e.preventDefault();
 
-    const { username, password } = formData;
+    const newErrors = {};
 
-    if (!username || !password) {
-      setError("Please fill in all fields.");
+    if (!formData.username.trim()) {
+      newErrors.username = "Username is required";
+    }
+
+    if (!formData.password.trim()) {
+      newErrors.password = "Password is required";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(prev => ({
+        ...prev,
+        ...newErrors,
+      }));
       return;
     }
 
-    console.log("Login:", formData);
+    try {
+      setErrors({
+        username: "",
+        password: "",
+        server: "",
+      });
 
-    setError("");
-    navigate("/dashboard");
+      const response = await fetch("http://localhost:5001/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: formData.username,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrors(prev => ({
+          ...prev,
+          server: data.message || "Login failed",
+        }));
+        return;
+      }
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("username", data.username);
+
+      window.location.href = "/dashboard";
+    } catch (error) {
+      setErrors(prev => ({
+        ...prev,
+        server: "Server error. Please try again.",
+      }));
+    }
   };
 
   return (
@@ -54,7 +110,11 @@ function Login() {
                 placeholder="username"
                 value={formData.username}
                 onChange={handleChange}
+                className={errors.username ? "input-error" : ""}
               />
+              {errors.username && (
+                <p className="error-label">{errors.username}</p>
+              )}
             </div>
 
             <div className="form-group">
@@ -65,10 +125,16 @@ function Login() {
                 placeholder="••••••••"
                 value={formData.password}
                 onChange={handleChange}
+                className={errors.password ? "input-error" : ""}
               />
+              {errors.password && (
+                <p className="error-label">{errors.password}</p>
+              )}
             </div>
 
-            {error && <p className="error-text">{error}</p>}
+            {errors.server && (
+              <p className="error-label server-error">{errors.server}</p>
+            )}
 
             <button type="submit" className="login-button">
               Login

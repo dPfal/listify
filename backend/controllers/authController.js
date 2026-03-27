@@ -38,13 +38,13 @@ const registerUser = async (req, res) => {
       password: hashedPassword,
     });
 
-    res.status(201).json({
-      id: user.id,
+    return res.status(201).json({
+      id: user._id,
       username: user.username,
-      token: generateToken(user.id),
+      token: generateToken(user._id),
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: error.message,
     });
   }
@@ -62,26 +62,34 @@ const loginUser = async (req, res) => {
 
     const user = await User.findOne({ username });
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-      res.status(200).json({
-        id: user.id,
-        username: user.username,
-        token: generateToken(user.id),
-      });
-    } else {
-      res.status(401).json({
+    if (!user) {
+      return res.status(401).json({
         message: "Invalid username or password",
       });
     }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        message: "Invalid username or password",
+      });
+    }
+
+    return res.status(200).json({
+      id: user._id,
+      username: user.username,
+      token: generateToken(user._id),
+    });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: error.message,
     });
   }
 };
 
 const logoutUser = async (req, res) => {
-  res.status(200).json({
+  return res.status(200).json({
     message: "Logged out successfully",
   });
 };
@@ -96,12 +104,12 @@ const getProfile = async (req, res) => {
       });
     }
 
-    res.status(200).json({
-      id: user.id,
+    return res.status(200).json({
+      id: user._id,
       username: user.username,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Server error",
       error: error.message,
     });

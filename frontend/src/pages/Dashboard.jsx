@@ -59,11 +59,47 @@ function Dashboard() {
       }),
     );
   };
-  const handleConfirmDelete = () => {
-    handleDeleteItem(deleteCategoryIndex, itemToDelete);
-    setIsDeleteModalOpen(false);
-    setDeleteCategoryIndex(null);
-    setItemToDelete(null);
+  const handleConfirmDelete = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        `http://localhost:5001/api/items/${itemToDelete}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Failed to delete item");
+        return;
+      }
+
+      setGroceryData(prevData =>
+        prevData
+          .map((category, cIndex) => {
+            if (cIndex !== deleteCategoryIndex) return category;
+
+            return {
+              ...category,
+              items: category.items.filter(item => item.id !== itemToDelete),
+            };
+          })
+          .filter(category => category.items.length > 0),
+      );
+
+      setIsDeleteModalOpen(false);
+      setItemToDelete(null);
+      setDeleteCategoryIndex(null);
+    } catch (error) {
+      console.error(error);
+      alert("Server error");
+    }
   };
   const handleConfirmClear = () => {
     handleClearAll();

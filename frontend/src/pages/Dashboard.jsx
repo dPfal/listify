@@ -26,41 +26,7 @@ function Dashboard() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [deleteCategoryIndex, setDeleteCategoryIndex] = useState(null);
-  const [groceryData, setGroceryData] = useState([
-    {
-      category: "Fruit",
-      emoji: "🍎",
-      items: [{ id: 1, name: "Grape", quantity: 1, checked: false }],
-    },
-    {
-      category: "Veggies",
-      emoji: "🥬",
-      items: [{ id: 2, name: "Lettuce", quantity: 2, checked: true }],
-    },
-    {
-      category: "Bread",
-      emoji: "🍞",
-      items: [
-        { id: 3, name: "Burger Bun", quantity: 1, checked: false },
-        { id: 4, name: "Wheat Bread", quantity: 1, checked: false },
-      ],
-    },
-    {
-      category: "Dairy",
-      emoji: "🥛",
-      items: [{ id: 5, name: "Soy Milk", quantity: 1, checked: true }],
-    },
-    {
-      category: "Meat",
-      emoji: "🥩",
-      items: [{ id: 6, name: "Rump Steak", quantity: 1, checked: true }],
-    },
-    {
-      category: "Seafood",
-      emoji: "🐟",
-      items: [{ id: 7, name: "Salmon", quantity: 1, checked: false }],
-    },
-  ]);
+  const [groceryData, setGroceryData] = useState([]);
 
   const handleToggleCheck = (categoryIndex, itemId) => {
     setGroceryData(prevData =>
@@ -70,10 +36,10 @@ function Dashboard() {
         return {
           ...category,
           items: category.items.map(item =>
-            item.id === itemId ? { ...item, checked: !item.checked } : item
+            item.id === itemId ? { ...item, checked: !item.checked } : item,
           ),
         };
-      })
+      }),
     );
   };
   const handleOpenDeleteModal = (categoryIndex, itemId) => {
@@ -90,7 +56,7 @@ function Dashboard() {
           ...category,
           items: category.items.filter(item => item.id !== itemId),
         };
-      })
+      }),
     );
   };
   const handleConfirmDelete = () => {
@@ -108,7 +74,7 @@ function Dashboard() {
       prevData.map(category => ({
         ...category,
         items: [],
-      }))
+      })),
     );
   };
 
@@ -139,11 +105,15 @@ function Dashboard() {
         return;
       }
 
-      console.log("Created:", data);
+      setGroceryData(prevData => {
+        const existingCategory = prevData.find(
+          category => category.category === data.category,
+        );
 
-      setGroceryData(prev => {
-        return prev.map(category => {
-          if (category.category === newItem.category) {
+        if (existingCategory) {
+          return prevData.map(category => {
+            if (category.category !== data.category) return category;
+
             return {
               ...category,
               items: [
@@ -152,16 +122,30 @@ function Dashboard() {
                   id: data._id,
                   name: data.name,
                   quantity: data.quantity,
-                  checked: false,
+                  checked: data.purchased,
                 },
               ],
             };
-          }
-          return category;
-        });
+          });
+        }
+
+        return [
+          ...prevData,
+          {
+            category: data.category,
+            items: [
+              {
+                id: data._id,
+                name: data.name,
+                quantity: data.quantity,
+                checked: data.purchased,
+              },
+            ],
+          },
+        ];
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       alert("Server error");
     }
   };
@@ -185,53 +169,85 @@ function Dashboard() {
     setIsEditModalOpen(true);
   };
 
-  const handleSaveEditedItem = updatedItem => {
-    setGroceryData(prevData => {
-      const originalCategory = prevData[selectedCategoryIndex].category;
+  const handleSaveEditedItem = async updatedItem => {
+    try {
+      const token = localStorage.getItem("token");
 
-      return prevData.map(category => {
-        if (category.category === originalCategory) {
-          return {
-            ...category,
-            items:
-              originalCategory === updatedItem.category
-                ? category.items.map(item =>
-                    item.id === updatedItem.id
-                      ? {
-                          ...item,
-                          name: updatedItem.name,
-                          quantity: updatedItem.quantity,
-                          checked: updatedItem.checked,
-                        }
-                      : item
-                  )
-                : category.items.filter(item => item.id !== updatedItem.id),
-          };
-        }
+      const response = await fetch(
+        `http://localhost:5001/api/items/${updatedItem.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: updatedItem.name,
+            quantity: updatedItem.quantity,
+            category: updatedItem.category,
+            checked: updatedItem.checked,
+          }),
+        },
+      );
 
-        if (category.category === updatedItem.category) {
-          return {
-            ...category,
-            items: [
-              ...category.items,
-              {
-                id: updatedItem.id,
-                name: updatedItem.name,
-                quantity: updatedItem.quantity,
-                checked: updatedItem.checked,
-              },
-            ],
-          };
-        }
+      const data = await response.json();
 
-        return category;
+      if (!response.ok) {
+        alert(data.message || "Failed to update item");
+        return;
+      }
+
+      setGroceryData(prevData => {
+        const originalCategory = prevData[selectedCategoryIndex].category;
+
+        return prevData.map(category => {
+          if (category.category === originalCategory) {
+            return {
+              ...category,
+              items:
+                originalCategory === data.category
+                  ? category.items.map(item =>
+                      item.id === updatedItem.id
+                        ? {
+                            ...item,
+                            name: data.name,
+                            quantity: data.quantity,
+                            checked: data.purchased,
+                          }
+                        : item,
+                    )
+                  : category.items.filter(item => item.id !== updatedItem.id),
+            };
+          }
+
+          if (category.category === data.category) {
+            return {
+              ...category,
+              items: [
+                ...category.items,
+                {
+                  id: updatedItem.id,
+                  name: data.name,
+                  quantity: data.quantity,
+                  checked: data.purchased,
+                },
+              ],
+            };
+          }
+
+          return category;
+        });
       });
-    });
 
-    setIsEditModalOpen(false);
-    setSelectedItem(null);
-    setSelectedCategoryIndex(null);
+      setIsEditModalOpen(false);
+      setSelectedItem(null);
+      setSelectedCategoryIndex(null);
+    } catch (error) {
+      console.error("Update item error:", error);
+      alert("Server error");
+    }
   };
+
   const handleSaveTitle = updatedTitle => {
     setListTitle(updatedTitle.toUpperCase());
     setIsRenameModalOpen(false);
@@ -264,16 +280,18 @@ function Dashboard() {
         </div>
 
         <div className="category-list">
-          {groceryData.map((category, categoryIndex) => (
-            <div className="category-section" key={category.category}>
-              <h3 className="category-title">
-                <span className="category-emoji">{category.emoji}</span>{" "}
-                {category.category}
-              </h3>
+          {groceryData.length === 0 ? (
+            <div className="empty-state">
+              <p>No items yet</p>
+              <p className="empty-sub">Tap + to add your first item</p>
+            </div>
+          ) : (
+            groceryData.map((category, categoryIndex) => (
+              <div className="category-section" key={category.category}>
+                <h3 className="category-title">{category.category}</h3>
 
-              <div className="category-card">
-                {category.items.length > 0 ? (
-                  category.items.map(item => (
+                <div className="category-card">
+                  {category.items.map(item => (
                     <div
                       className="item-row"
                       key={item.id}
@@ -303,15 +321,12 @@ function Dashboard() {
                         <FiX />
                       </button>
                     </div>
-                  ))
-                ) : (
-                  <p className="empty-text">No items</p>
-                )}
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
-
         <button className="floating-add-button" onClick={handleAddItem}>
           <FiPlus />
         </button>

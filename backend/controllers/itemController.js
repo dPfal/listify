@@ -59,6 +59,7 @@ const updateItem = async (req, res) => {
     });
   }
 };
+
 const deleteItem = async (req, res) => {
   try {
     const item = await Item.findById(req.params.id);
@@ -101,7 +102,22 @@ const getItems = async (req, res) => {
     });
   }
 };
+const clearAllItems = async (req, res) => {
+  try {
+    await Item.deleteMany({ user: req.user.id });
+
+    return res.status(200).json({
+      message: "All items deleted successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to clear items",
+      error: error.message,
+    });
+  }
+};
 module.exports = {
+  clearAllItems,
   createItem,
   updateItem,
   deleteItem,

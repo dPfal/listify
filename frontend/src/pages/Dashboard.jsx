@@ -201,17 +201,30 @@ function Dashboard() {
       alert("Server error");
     }
   };
-  const handleConfirmClear = () => {
-    handleClearAll();
-    setIsClearModalOpen(false);
-  };
-  const handleClearAll = () => {
-    setGroceryData(prevData =>
-      prevData.map(category => ({
-        ...category,
-        items: [],
-      })),
-    );
+  const handleConfirmClear = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch("http://localhost:5001/api/items", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Failed to clear items");
+        return;
+      }
+
+      setGroceryData([]);
+      setIsClearModalOpen(false);
+    } catch (error) {
+      console.error("Clear items error:", error);
+      alert("Server error");
+    }
   };
 
   const handleAddItem = () => {

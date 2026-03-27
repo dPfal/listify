@@ -13,17 +13,29 @@ function App() {
         <Route
           path="/"
           element={
-            token ? <Navigate to="/grocery" /> : <Navigate to="/login" />
+            token ? <Navigate to="/dashboard" /> : <Navigate to="/login" />
           }
         />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        {/* <Route
-          path="/grocery"
+
+        <Route
+          path="/login"
+          element={token ? <Navigate to="/dashboard" /> : <Login />}
+        />
+
+        <Route
+          path="/register"
+          element={token ? <Navigate to="/dashboard" /> : <Register />}
+        />
+
+        <Route
+          path="/dashboard"
           element={token ? <Dashboard /> : <Navigate to="/login" />}
-        /> */}
-        <Route path="/admin" element={<AdminPanel />} />
+        />
+
+        <Route
+          path="/admin"
+          element={token ? <AdminPanel /> : <Navigate to="/login" />}
+        />
       </Routes>
     </BrowserRouter>
   );

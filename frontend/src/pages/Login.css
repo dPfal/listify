@@ -104,3 +104,17 @@
   font-weight: 500;
   text-decoration: underline;
 }
+.input-error {
+  border: 1px solid #ef4444 !important;
+}
+
+.error-label {
+  color: #ef4444;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.server-error {
+  text-align: center;
+  margin-top: 4px;
+}

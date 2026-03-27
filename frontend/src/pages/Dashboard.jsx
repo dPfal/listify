@@ -115,7 +115,56 @@ function Dashboard() {
   const handleAddItem = () => {
     setIsAddModalOpen(true);
   };
+  const handleCreateItem = async newItem => {
+    try {
+      const token = localStorage.getItem("token");
 
+      const response = await fetch("http://localhost:5001/api/items", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: newItem.name,
+          quantity: newItem.quantity,
+          category: newItem.category,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Failed to create item");
+        return;
+      }
+
+      console.log("Created:", data);
+
+      setGroceryData(prev => {
+        return prev.map(category => {
+          if (category.category === newItem.category) {
+            return {
+              ...category,
+              items: [
+                ...category.items,
+                {
+                  id: data._id,
+                  name: data.name,
+                  quantity: data.quantity,
+                  checked: false,
+                },
+              ],
+            };
+          }
+          return category;
+        });
+      });
+    } catch (error) {
+      console.log(error);
+      alert("Server error");
+    }
+  };
   const handleLogout = () => {
     setIsLogoutModalOpen(true);
   };
@@ -289,7 +338,7 @@ function Dashboard() {
         <AddItemModal
           onClose={() => setIsAddModalOpen(false)}
           onAdd={newItem => {
-            console.log(newItem);
+            handleCreateItem(newItem);
             setIsAddModalOpen(false);
           }}
         />

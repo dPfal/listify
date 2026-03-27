@@ -5,7 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import AdminPanel from "./pages/AdminPanel";
 
 function App() {
-  const token = localStorage.getItem("token");
+  const isLoggedIn = !!localStorage.getItem("token");
 
   return (
     <BrowserRouter>
@@ -13,28 +13,28 @@ function App() {
         <Route
           path="/"
           element={
-            token ? <Navigate to="/dashboard" /> : <Navigate to="/login" />
+            isLoggedIn ? <Navigate to="/dashboard" /> : <Navigate to="/login" />
           }
         />
 
         <Route
           path="/login"
-          element={token ? <Navigate to="/dashboard" /> : <Login />}
+          element={isLoggedIn ? <Navigate to="/dashboard" /> : <Login />}
         />
 
         <Route
           path="/register"
-          element={token ? <Navigate to="/dashboard" /> : <Register />}
+          element={isLoggedIn ? <Navigate to="/dashboard" /> : <Register />}
         />
 
         <Route
           path="/dashboard"
-          element={token ? <Dashboard /> : <Navigate to="/login" />}
+          element={isLoggedIn ? <Dashboard /> : <Navigate to="/login" />}
         />
 
         <Route
           path="/admin"
-          element={token ? <AdminPanel /> : <Navigate to="/login" />}
+          element={isLoggedIn ? <AdminPanel /> : <Navigate to="/login" />}
         />
       </Routes>
     </BrowserRouter>

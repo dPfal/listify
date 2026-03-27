@@ -11,7 +11,11 @@ function Login() {
     password: "",
   });
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({
+    username: "",
+    password: "",
+    server: "",
+  });
 
   const handleChange = e => {
     const { id, value } = e.target;
@@ -33,21 +37,28 @@ function Login() {
 
     const newErrors = {};
 
-    if (!formData.username) {
+    if (!formData.username.trim()) {
       newErrors.username = "Username is required";
     }
 
-    if (!formData.password) {
+    if (!formData.password.trim()) {
       newErrors.password = "Password is required";
     }
 
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+      setErrors(prev => ({
+        ...prev,
+        ...newErrors,
+      }));
       return;
     }
 
     try {
-      setErrors({});
+      setErrors({
+        username: "",
+        password: "",
+        server: "",
+      });
 
       const response = await fetch("http://localhost:5001/api/auth/login", {
         method: "POST",
@@ -63,20 +74,22 @@ function Login() {
       const data = await response.json();
 
       if (!response.ok) {
-        setErrors({
+        setErrors(prev => ({
+          ...prev,
           server: data.message || "Login failed",
-        });
+        }));
         return;
       }
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("username", data.username);
 
-      navigate("/dashboard");
+      window.location.href = "/dashboard";
     } catch (error) {
-      setErrors({
+      setErrors(prev => ({
+        ...prev,
         server: "Server error. Please try again.",
-      });
+      }));
     }
   };
 

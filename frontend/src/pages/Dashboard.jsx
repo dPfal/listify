@@ -28,19 +28,62 @@ function Dashboard() {
   const [deleteCategoryIndex, setDeleteCategoryIndex] = useState(null);
   const [groceryData, setGroceryData] = useState([]);
 
-  const handleToggleCheck = (categoryIndex, itemId) => {
-    setGroceryData(prevData =>
-      prevData.map((category, cIndex) => {
-        if (cIndex !== categoryIndex) return category;
+  const handleToggleCheck = async (categoryIndex, itemId) => {
+    try {
+      const token = localStorage.getItem("token");
 
-        return {
-          ...category,
-          items: category.items.map(item =>
-            item.id === itemId ? { ...item, checked: !item.checked } : item,
-          ),
-        };
-      }),
-    );
+      const category = groceryData[categoryIndex];
+      const currentItem = category.items.find(item => item.id === itemId);
+
+      if (!currentItem) {
+        return;
+      }
+
+      const response = await fetch(
+        `http://localhost:5001/api/items/${itemId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: currentItem.name,
+            quantity: currentItem.quantity,
+            category: category.category,
+            checked: !currentItem.checked,
+          }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Failed to update item");
+        return;
+      }
+
+      setGroceryData(prevData =>
+        prevData.map((category, cIndex) => {
+          if (cIndex !== categoryIndex) return category;
+
+          return {
+            ...category,
+            items: category.items.map(item =>
+              item.id === itemId
+                ? {
+                    ...item,
+                    checked: data.purchased,
+                  }
+                : item,
+            ),
+          };
+        }),
+      );
+    } catch (error) {
+      console.error("Toggle check error:", error);
+      alert("Server error");
+    }
   };
   const groupItemsByCategory = items => {
     const grouped = items.reduce((acc, item) => {

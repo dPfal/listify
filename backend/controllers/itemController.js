@@ -59,8 +59,37 @@ const updateItem = async (req, res) => {
     });
   }
 };
+const deleteItem = async (req, res) => {
+  try {
+    const item = await Item.findById(req.params.id);
 
+    if (!item) {
+      return res.status(404).json({
+        message: "Item not found",
+      });
+    }
+
+    // 🔥 본인 아이템만 삭제 가능
+    if (item.user.toString() !== req.user.id) {
+      return res.status(401).json({
+        message: "Not authorized",
+      });
+    }
+
+    await item.deleteOne();
+
+    return res.status(200).json({
+      message: "Item deleted",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to delete item",
+      error: error.message,
+    });
+  }
+};
 module.exports = {
   createItem,
   updateItem,
+  deleteItem,
 };

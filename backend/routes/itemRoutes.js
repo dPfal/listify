@@ -5,10 +5,12 @@ const {
   createItem,
   updateItem,
   deleteItem,
+  getItems,
 } = require("../controllers/itemController");
 const { protect } = require("../middleware/authMiddleware");
 
 router.post("/", protect, createItem);
 router.put("/:id", protect, updateItem);
 router.delete("/:id", protect, deleteItem);
+router.get("/", protect, getItems);
 module.exports = router;

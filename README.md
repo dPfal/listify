@@ -1,24 +1,47 @@
+# Listify - Grocery List Manager (Yelim Lee N12278491)
 
-**Assessment 1.2 (Total Marks **20**)**
+This project was developed as part of IFN636 Software Life Cycle Management.
 
-Assignment: **Software requirements analysis and design (**Full-Stack CRUD Application Development with DevOps Practices**)**
+Listify is a full-stack web application that allows users to manage grocery lists efficiently.
+Users can create, view, update, and delete grocery items.
+The system includes secure user authentication and supports category management for better organization.
 
+## Features
 
----
+- User Registration and Login (Authentication)
+- Create, Read, Update, Delete (CRUD) Grocery Items
+- Category Selection for Items
+- Mark Items as Completed
+- Authentication using JWT
 
-**Objective**
+## Tech Stack
 
-For this assessment, you have already been assigned a project. Your task is to develop a system that implements CRUD (Create, Read, Update, Delete) operations based on the selected project. The system should include both a user panel and an admin panel. Depending on the nature of your chosen project, you may decide how many CRUD operations are required to support the functionality of the system. You have been provided with a starter project that includes user authentication using Node.js, React.js, and MongoDB, your should extend this application based on your assigned project requirements. Ensure that the implemented features are appropriate and meaningful for your selected project. Your project should include the following:
-In this assignment you will complete the following tasks:
+- Frontend: React
+- Backend: Node.js, Express
+- Database: MongoDB
+- Deployment: AWS EC2
+- Process Manager: PM2
+- Web Server: Nginx
+- CI/CD: GitHub Actions
 
-* **Basic Version Control using GitHub**
-* **Development, CI/CD Integration for Automated Deployment**
-* **Project report**
+## System Architecture
 
- 
----
+- Frontend is built using React and served via Nginx
+- Backend is built with Express and runs on port 5001
+- MongoDB is used for data storage
+- PM2 is used to keep backend running
+- GitHub Actions automates testing and build
 
-**GitHub link of the starter project: **[https://github.com/nahaQUT/sampleapp_IFQ636.git](https://github.com/nahaQUT/sampleapp_IFQ636.git)
+## Installation
 
----
+Install dependencies for both frontend and backend:
 
+### Backend
+
+cd backend
+npm install
+
+### Frontend
+
+cd frontend
+npm install

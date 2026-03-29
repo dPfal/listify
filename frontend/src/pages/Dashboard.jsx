@@ -35,7 +35,7 @@ function Dashboard() {
       const categoryName = item.category || "Uncategorized";
 
       const existingCategory = acc.find(
-        category => category.category === categoryName,
+        category => category.category === categoryName
       );
 
       const formattedItem = {
@@ -63,14 +63,11 @@ function Dashboard() {
       try {
         const token = localStorage.getItem("token");
 
-        const response = await fetch(
-          "http://localhost:5001/api/users/list-name",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        const response = await fetch("/api/users/list-name", {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-        );
+        });
 
         const data = await response.json();
 
@@ -156,7 +153,7 @@ function Dashboard() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ listName: trimmedTitle }),
-        },
+        }
       );
 
       const data = await response.json();
@@ -200,7 +197,7 @@ function Dashboard() {
 
       setGroceryData(prevData => {
         const existingCategory = prevData.find(
-          category => category.category === data.category,
+          category => category.category === data.category
         );
 
         if (existingCategory) {
@@ -266,7 +263,7 @@ function Dashboard() {
             category: category.category,
             purchased: !currentItem.checked,
           }),
-        },
+        }
       );
 
       const data = await response.json();
@@ -288,10 +285,10 @@ function Dashboard() {
                     ...item,
                     checked: data.purchased,
                   }
-                : item,
+                : item
             ),
           };
-        }),
+        })
       );
     } catch (error) {
       console.error("Toggle check error:", error);
@@ -326,7 +323,7 @@ function Dashboard() {
             category: updatedItem.category,
             purchased: updatedItem.checked,
           }),
-        },
+        }
       );
 
       const data = await response.json();
@@ -353,7 +350,7 @@ function Dashboard() {
                         quantity: data.quantity,
                         checked: data.purchased,
                       }
-                    : item,
+                    : item
                 ),
               };
             }
@@ -383,7 +380,7 @@ function Dashboard() {
         });
 
         const categoryExists = updatedData.some(
-          category => category.category === newCategory,
+          category => category.category === newCategory
         );
 
         if (!categoryExists) {
@@ -429,7 +426,7 @@ function Dashboard() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
 
       const data = await response.json();
@@ -449,7 +446,7 @@ function Dashboard() {
               items: category.items.filter(item => item.id !== itemToDelete),
             };
           })
-          .filter(category => category.items.length > 0),
+          .filter(category => category.items.length > 0)
       );
 
       setIsDeleteModalOpen(false);

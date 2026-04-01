@@ -90,7 +90,7 @@ function Dashboard() {
       try {
         const token = localStorage.getItem("token");
 
-        const response = await fetch("http://localhost:5001/api/items", {
+        const response = await fetch("/api/items", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -144,17 +144,14 @@ function Dashboard() {
 
       const token = localStorage.getItem("token");
 
-      const response = await fetch(
-        "http://localhost:5001/api/users/list-name",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ listName: trimmedTitle }),
-        }
-      );
+      const response = await fetch("/api/users/list-name", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ listName: trimmedTitle }),
+      });
 
       const data = await response.json();
 
@@ -175,7 +172,7 @@ function Dashboard() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch("http://localhost:5001/api/items", {
+      const response = await fetch("/api/items", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -249,22 +246,19 @@ function Dashboard() {
 
       if (!currentItem) return;
 
-      const response = await fetch(
-        `http://localhost:5001/api/items/${itemId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            name: currentItem.name,
-            quantity: currentItem.quantity,
-            category: category.category,
-            purchased: !currentItem.checked,
-          }),
-        }
-      );
+      const response = await fetch(`/api/items/${itemId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: currentItem.name,
+          quantity: currentItem.quantity,
+          category: category.category,
+          purchased: !currentItem.checked,
+        }),
+      });
 
       const data = await response.json();
 
@@ -309,22 +303,19 @@ function Dashboard() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(
-        `http://localhost:5001/api/items/${updatedItem.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            name: updatedItem.name,
-            quantity: updatedItem.quantity,
-            category: updatedItem.category,
-            purchased: updatedItem.checked,
-          }),
-        }
-      );
+      const response = await fetch(`/api/items/${updatedItem.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: updatedItem.name,
+          quantity: updatedItem.quantity,
+          category: updatedItem.category,
+          purchased: updatedItem.checked,
+        }),
+      });
 
       const data = await response.json();
 
@@ -419,15 +410,12 @@ function Dashboard() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(
-        `http://localhost:5001/api/items/${itemToDelete}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`/api/items/${itemToDelete}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const data = await response.json();
 
@@ -462,7 +450,7 @@ function Dashboard() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch("http://localhost:5001/api/items", {
+      const response = await fetch("/api/items", {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

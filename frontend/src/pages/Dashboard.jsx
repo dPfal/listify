@@ -17,24 +17,27 @@ import ConfirmModal from "./ConfirmModal";
 function Dashboard() {
   const [listName, setListName] = useState("My Grocery List");
   const [groceryData, setGroceryData] = useState([]);
-  const [username, setUsername] = useState("");
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isClearModalOpen, setIsClearModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
+  const [username, setUsername] = useState(
+    localStorage.getItem("username") || ""
+  );
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [deleteCategoryIndex, setDeleteCategoryIndex] = useState(null);
+
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
     if (storedUsername) {
       setUsername(storedUsername);
     }
   }, []);
+
   const groupItemsByCategory = items => {
     return items.reduce((acc, item) => {
       const categoryName = item.category || "Uncategorized";

@@ -72,6 +72,8 @@ function Login() {
       });
 
       const data = await response.json();
+      console.log("login response:", data);
+      console.log("username:", data.user?.username);
 
       if (!response.ok) {
         setErrors(prev => ({
@@ -82,8 +84,7 @@ function Login() {
       }
 
       localStorage.setItem("token", data.token);
-      localStorage.setItem("username", data.username);
-
+      localStorage.setItem("username", data.user.username);
       window.location.href = "/dashboard";
     } catch (error) {
       setErrors(prev => ({

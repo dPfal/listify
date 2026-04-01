@@ -17,7 +17,7 @@ import ConfirmModal from "./ConfirmModal";
 function Dashboard() {
   const [listName, setListName] = useState("My Grocery List");
   const [groceryData, setGroceryData] = useState([]);
-
+  const [username, setUsername] = useState("");
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -29,7 +29,12 @@ function Dashboard() {
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [deleteCategoryIndex, setDeleteCategoryIndex] = useState(null);
-
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("username");
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+  }, []);
   const groupItemsByCategory = items => {
     return items.reduce((acc, item) => {
       const categoryName = item.category || "Uncategorized";
@@ -476,7 +481,7 @@ function Dashboard() {
     <div className="dashboard-page">
       <div className="phone-frame">
         <div className="dashboard-topbar">
-          <h2 className="greeting">👋 Hi, yelimlee!</h2>
+          <h2 className="greeting">👋 Hi, {username}!</h2>{" "}
           <button className="icon-button logout-button" onClick={handleLogout}>
             <FiLogOut />
           </button>

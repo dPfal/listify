@@ -37,11 +37,11 @@ The system includes secure user authentication and supports category management 
 Install dependencies for both frontend and backend:
 
 ### Backend
-
 cd backend
+
 npm install
 
 ### Frontend
-
 cd frontend
+
 npm install

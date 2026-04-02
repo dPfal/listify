@@ -7,7 +7,7 @@ const {
   deleteItem,
   getItems,
   clearAllItems,
-} = require("../controllers/itemController");
+} = require("../controllers/ss");
 const { protect } = require("../middleware/authMiddleware");
 
 router.post("/", protect, createItem);

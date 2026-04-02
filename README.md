@@ -6,6 +6,11 @@ Listify is a full-stack web application that allows users to manage grocery list
 Users can create, view, update, and delete grocery items.
 The system includes secure user authentication and supports category management for better organization.
 
+## Live Demo
+
+Public URL:  
+http://13.211.74.49
+
 ## Features
 
 - User Registration and Login (Authentication)
@@ -48,16 +53,33 @@ This ensures that users can quickly manage their grocery lists in real-world sce
 
 ## Installation
 
-Install dependencies for both frontend and backend:
+### Clone the repository
 
-### Backend
+````bash
+git clone https://github.com/dPfal/listify
+cd listify
 
+### Backend Setup
 cd backend
-
 npm install
 
-### Frontend
+### Environment Setup
 
-cd frontend
+Create a `.env` file in the backend directory based on the `.env.example` file:
 
+```bash
+cp .env.example .env
+
+### Run Backend
+npm run dev
+
+## Frontend Setup
+cd ../frontend
 npm install
+npm run dev
+
+## Deployment
+pm2 start index.js --name backend
+pm2 save
+pm2 startup
+````

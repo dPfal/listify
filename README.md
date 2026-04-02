@@ -41,6 +41,11 @@ This account already contains sample grocery items to help demonstrate the core 
 - PM2 is used to keep backend running
 - GitHub Actions automates testing and build
 
+## Design Approach
+
+The application adopts a mobile-first design approach, focusing on simplicity, accessibility, and efficient user interaction.  
+This ensures that users can quickly manage their grocery lists in real-world scenarios, even on smaller devices.
+
 ## Installation
 
 Install dependencies for both frontend and backend:

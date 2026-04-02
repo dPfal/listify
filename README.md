@@ -81,7 +81,7 @@ cp .env.example .env
 npm run dev
 ```
 
-## Frontend Setup
+### Frontend Setup
 
 ```bash
 cd ../frontend
@@ -89,7 +89,7 @@ npm install
 npm run dev
 ```
 
-## Deployment
+### Deployment
 
 ```bash
 pm2 start index.js --name backend

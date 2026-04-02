@@ -55,13 +55,17 @@ This ensures that users can quickly manage their grocery lists in real-world sce
 
 ### Clone the repository
 
-````bash
+```bash
 git clone https://github.com/dPfal/listify
 cd listify
+```
 
 ### Backend Setup
+
+```bash
 cd backend
 npm install
+```
 
 ### Environment Setup
 
@@ -69,17 +73,26 @@ Create a `.env` file in the backend directory based on the `.env.example` file:
 
 ```bash
 cp .env.example .env
+```
 
 ### Run Backend
+
+```bash
 npm run dev
+```
 
 ## Frontend Setup
+
+```bash
 cd ../frontend
 npm install
 npm run dev
+```
 
 ## Deployment
+
+```bash
 pm2 start index.js --name backend
 pm2 save
 pm2 startup
-````
+```

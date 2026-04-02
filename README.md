@@ -14,6 +14,15 @@ The system includes secure user authentication and supports category management 
 - Mark Items as Completed
 - Authentication using JWT
 
+## Demo Account
+
+You can use the following demo account to test the application with pre-populated grocery list data:
+
+- Username: user1
+- Password: user1234
+
+This account already contains sample grocery items to help demonstrate the core functionality of the system.
+
 ## Tech Stack
 
 - Frontend: React
@@ -37,11 +46,13 @@ The system includes secure user authentication and supports category management 
 Install dependencies for both frontend and backend:
 
 ### Backend
+
 cd backend
 
 npm install
 
 ### Frontend
+
 cd frontend
 
 npm install
